@@ -53,14 +53,17 @@ class PowerUp(object):
         # schoenere konstruktion moeglich?
         if len(self.position[0]) > 0:
             for (idx, posi) in enumerate(self.position[0]):
-                if self.bike1.bike[0] == posi:
-                    self.execute_powerup(self.bike1, self.position[1][idx], game_tick)
-                if self.bike2.bike[0] == posi:
-                    self.execute_powerup(self.bike2, self.position[1][idx], game_tick)
-                if (self.bike1.bike[0] == posi) or (self.bike2.bike[0] == posi):
-                    del self.position[0][idx]
-                    del self.position[1][idx]
-                    del self.position[2][idx]
+                if len(self.bike1.bike) > 0:
+                    if self.bike1.bike[0] == posi:
+                        self.execute_powerup(self.bike1, self.position[1][idx], game_tick)
+                if len(self.bike2.bike) > 0:
+                    if self.bike2.bike[0] == posi:
+                        self.execute_powerup(self.bike2, self.position[1][idx], game_tick)
+                if len(self.bike1.bike) > 0 and len(self.bike2.bike) > 0:
+                    if (self.bike1.bike[0] == posi) or (self.bike2.bike[0] == posi): #moeglicher fehler wenn einer mit len 1 nen powerup nimmt?
+                        del self.position[0][idx]
+                        del self.position[1][idx]
+                        del self.position[2][idx]
 
 
     def execute_powerup(self, bike, powerup, game_tick):

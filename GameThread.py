@@ -48,6 +48,7 @@ class GameThread(QThread):
                 self.bike_2.do_next_step(tact_counter)
 
             #  Collision detection and emit of signals
+            #TODO: nachvollziehen warum ich hier kleinen tact hatte
             smaller_tact = min(self.bike_1.bike_tact, self.bike_2.bike_tact)
             if tact_counter%smaller_tact == 0:
                 
@@ -72,18 +73,19 @@ class GameThread(QThread):
                 self.bike_1.bike_wall_collision(self.blocked_blocks)
                 self.bike_2.bike_wall_collision(self.blocked_blocks)
 
-                #  Emit power up list
-                self.power_up_list.emit(self.powerUp.position)
 
-                #  Break loop when one bike has lost.
-                if (len(self.bike_1.bike) <= 0) or (len(self.bike_2.bike) <= 0):
-                    break
-                
-                #  Win condition.
+            #  Emit power up list
+            self.power_up_list.emit(self.powerUp.position)
 
-                self.bike2_list.emit(self.bike_2.bike)
-                self.bike1_list.emit(self.bike_1.bike) # auch an den update gebunden
+            #  Break loop when one bike has lost.
+            if (len(self.bike_1.bike) <= 0) or (len(self.bike_2.bike) <= 0):
+                break
             
+            #  Win condition.
+
+            self.bike2_list.emit(self.bike_2.bike)
+            self.bike1_list.emit(self.bike_1.bike) # auch an den update gebunden
+        
             #time.sleep(gameconfig.game_tact)
             time.sleep(gameconfig.game_base_tact / smaller_tact * gameconfig.game_tact)
             tact_counter += 1

@@ -16,12 +16,13 @@ class TronBike(object):
         self.reset_bike_tact_tick = -1
         
         self.set_direction('up')
-        self.spawn_bike(70,70)
+        ##self.spawn_bike(70,70)
         
         #random.randint(5,60)
         #self.spawn_bike(random.randint(5,45),random.randint(5,45))
 
     def spawn_bike(self, dots_x, dots_y):
+        self.bike = []
         start_x = random.randint(self.inital_length+1, dots_x-self.inital_length-1)
         start_y = random.randint(self.inital_length+1, dots_y-self.inital_length-1)
         self.bike.append((start_x, start_y))
@@ -82,19 +83,25 @@ class TronBike(object):
 
     @classmethod
     def bike_bike_collision(cls, bike1, bike2):
-        if bike1.bike[0] in bike2.bike:
-            bike1.size_change -= 5
-        if bike2.bike[0] in bike1.bike:
-            bike2.size_change -= 5
-            pass
+        #bei dieser und den naechsten methoden wird auf das erste element von bike zugegriffen
+        #die lsite kann aber auch 0 lang sein.
+        if len(bike1.bike) > 0:
+            if bike1.bike[0] in bike2.bike:
+                bike1.size_change -= 5
+        if len(bike2.bike) > 0:
+            if bike2.bike[0] in bike1.bike:
+                bike2.size_change -= 5 
+                #pass
     
     def bike_self_collision(self):
-        if self.bike[0] in self.bike[1:]:
-            self.size_change -= 5
+        if len(self.bike) > 0: #keine self collision wenn bike 0 lang ist
+            if self.bike[0] in self.bike[1:]:
+                self.size_change -= 5
     
     def bike_wall_collision(self, blocked_blocks):
-        if self.bike[0] in blocked_blocks:
-            del self.bike[0]
+        if len(self.bike) > 0:
+            if self.bike[0] in blocked_blocks:
+                del self.bike[0]
 
     def reset_bike_tact(self, game_tact):
         if (self.bike_tact != 5) and (game_tact >= self.reset_bike_tact_tick):

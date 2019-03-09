@@ -4,7 +4,8 @@ from PyQt5.QtCore import Qt
 import sys
 import random
 from TronBike import TronBike
-from GameThread import GameThread
+#from GameThread import GameThread
+from GameThread_restructured import GameThread
 import time
 import gameconfig
 from BoardBlocks import BoardBlocks
@@ -29,9 +30,9 @@ class MainWindow(QWidget):
         self.gameThread.power_up_list.connect(self.get_power_up_list)
 
         #  Init list of tron-bike positions and list of power ups.
-        self.bike1_list = None
-        self.bike2_list = None
-        self.power_up_list = []
+        self.bike1_list = []
+        self.bike2_list = []
+        self.power_up_list = [[]]
         self.power_up_colors = {'+X':gameconfig.power_up_color_1, '+velo':gameconfig.power_up_color_2, '-velo, +X':gameconfig.power_up_color_3, '+velo, -X':gameconfig.power_up_color_4}
 
         #  Start gameThread.
