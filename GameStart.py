@@ -4,8 +4,8 @@ from PyQt5.QtCore import Qt
 import sys
 import random
 from TronBike import TronBike
-#from GameThread import GameThread
-from GameThread_restructured import GameThread
+from GameThread import GameThread
+#from GameThread_restructured import GameThread
 import time
 import gameconfig
 from BoardBlocks import BoardBlocks
@@ -34,6 +34,7 @@ class MainWindow(QWidget):
         self.bike2_list = []
         self.power_up_list = [[]]
         self.power_up_colors = {'+X':gameconfig.power_up_color_1, '+velo':gameconfig.power_up_color_2, '-velo, +X':gameconfig.power_up_color_3, '+velo, -X':gameconfig.power_up_color_4}
+
 
         #  Start gameThread.
         self.gameThread.start()
@@ -67,22 +68,26 @@ class MainWindow(QWidget):
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_F5:
             self.close()
-        if e.key() == Qt.Key_Up:
-            self.gameThread.bike_1.set_direction('up')
-        if e.key() == Qt.Key_Right:
-            self.gameThread.bike_1.set_direction('right')
-        if e.key() == Qt.Key_Down:
-            self.gameThread.bike_1.set_direction('down')
-        if e.key() == Qt.Key_Left:
-            self.gameThread.bike_1.set_direction('left')
-        if e.key() == Qt.Key_W:
-            self.gameThread.bike_2.set_direction('up')
-        if e.key() == Qt.Key_D:
-            self.gameThread.bike_2.set_direction('right')
-        if e.key() == Qt.Key_S:
-            self.gameThread.bike_2.set_direction('down')
-        if e.key() == Qt.Key_A:
-            self.gameThread.bike_2.set_direction('left')
+        # Player 1
+        if gameconfig.bike1_player == 'human':
+            if e.key() == Qt.Key_Up:
+                self.gameThread.bike_1.set_direction('up')
+            if e.key() == Qt.Key_Right:
+                self.gameThread.bike_1.set_direction('right')
+            if e.key() == Qt.Key_Down:
+                self.gameThread.bike_1.set_direction('down')
+            if e.key() == Qt.Key_Left:
+                self.gameThread.bike_1.set_direction('left')
+        # Player 2
+        if gameconfig.bike2_player == 'human':
+            if e.key() == Qt.Key_W:
+                self.gameThread.bike_2.set_direction('up')
+            if e.key() == Qt.Key_D:
+                self.gameThread.bike_2.set_direction('right')
+            if e.key() == Qt.Key_S:
+                self.gameThread.bike_2.set_direction('down')
+            if e.key() == Qt.Key_A:
+                self.gameThread.bike_2.set_direction('left')
 
     def drawRectangles(self, qp):
 

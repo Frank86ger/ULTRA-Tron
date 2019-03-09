@@ -24,61 +24,16 @@ class GameThread(QThread, GameLoop):
         GameLoop.__init__(self)
         #super(GameThread, self).__init__()
 
-        self.directions = {0:'up', 1:'down', 2:'left', 3:'right'} #kann auch egal sein.
-
-
-        ##
-        action_dim = 4
-        state_dim = len(self.get_som_state())
-        print("State dim {}".format(state_dim))
-        self.state_dim = state_dim
-        #self.brain = Dqn(state_dim,action_dim,0.9)
-        #self.brain = Dqn(5,4,0.8)
-        # state: 
-        #last_reward = 0
-        scores = []
-        ##
-
-        #len(self.blocked_blocks)*2
-        #np.array(self.blocked_blocks).flatten()
-
-
-
 
     def run(self):
-        last_reward = 0.0
-        #  Counts game tact
+
         tact_counter = 0
-        bike_length = len(self.bike_2.bike)
         while True:
-
-            #random direction
-            #the_direc = self.directions[random.randint(0,3)]#
-            #self.bike_2.set_direction(the_direc)#
-
-            #last_signal = self.get_som_state()#np.array(self.get_som_state(), dtype=int).tolist()
-            #last_signal = np.array(self.get_som_state(), dtype=float).tolist()
-            #print(last_signal)
-            #action = self.brain.update(last_reward, last_signal)
-
-            ##the_direc_idx = int(action.numpy())
-            ##the_direc = self.directions[the_direc_idx]
-            ##self.bike_1.set_direction(the_direc)#
-
-
-            #action = self.brain.update(0.5, [0.5]*self.state_dim)
 
             smaller_tact = self.game_step(tact_counter)
 
-            #  Emit power up list
-            self.power_up_list.emit(self.powerUp.position)
 
-            #  Break loop when one bike has lost. Das ist noch unsauber
-            #if (len(self.bike_1.bike) <= 0) or (len(self.bike_2.bike) <= 0):
-            #    break
-            #  Win condition can be implemented here.
-
-
+            #gamemode = gameconfig.gamemode
             # Das hier sind die win conditions
             if len(self.bike_1.bike) <= 0:
                 self.bike_1.spawn_bike(70,70)
@@ -98,8 +53,9 @@ class GameThread(QThread, GameLoop):
                 #last_reward = -1.
 
 
-
-
+            # Emits
+            #  Emit power up list
+            self.power_up_list.emit(self.powerUp.position)
 
             self.bike2_list.emit(self.bike_2.bike)
             self.bike1_list.emit(self.bike_1.bike) # auch an den update gebunden

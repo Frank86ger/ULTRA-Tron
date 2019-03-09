@@ -21,6 +21,9 @@ class TronBike(object):
         #random.randint(5,60)
         #self.spawn_bike(random.randint(5,45),random.randint(5,45))
 
+        self.dqn_path = None
+        self.last_reward = 0.0
+
     def spawn_bike(self, dots_x, dots_y):
         self.bike = []
         start_x = random.randint(self.inital_length+1, dots_x-self.inital_length-1)

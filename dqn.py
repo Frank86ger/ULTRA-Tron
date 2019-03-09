@@ -59,7 +59,7 @@ class Dqn():
         self.gamma = gamma
         #self.model = Network(input_size, 60, 30, nb_action)
         self.model = Network(input_size, 40, 40, nb_action)
-        self.memory = ReplayMemory(10000)
+        self.memory = [ReplayMemory(10000), ReplayMemory(10000)]
         self.optimizer = optim.Adam(self.model.parameters(), lr = 0.001)
         self.last_state = torch.Tensor(input_size)#.unsqueeze(0)
         self.last_action = 0
@@ -96,16 +96,19 @@ class Dqn():
         #print(max_q_values)
         #print((self.model(torch.tensor([0.5]*6))))
 
-    def update(self, reward, new_signal):
+    def update(self, reward, new_signal, mem_idx=0):
         #new_signal kann auch new_state heissen oder?
         new_state = torch.Tensor(new_signal).float()
         #('state', 'action', 'next_state', 'reward')
         #print(int(self.last_action))
-        self.memory.push(self.last_state, torch.LongTensor([int(self.last_action)]), new_state, torch.Tensor([self.last_reward]))
+        self.memory[mem_idx].push(self.last_state, torch.LongTensor([int(self.last_action)]), new_state, torch.Tensor([self.last_reward]))
         #self.memory.push(self.last_state, torch.Tensor([int(self.last_action)]).int(), new_state, torch.Tensor([self.last_reward]))
         action = self.select_action(new_state, 1.)
-        if len(self.memory.memory) > 100:
-            batch_transitions = self.memory.sample(100)
+        if len(self.memory[mem_idx].memory) > 100:
+            batch_transitions = self.memory[mem_idx].sample(100)
+            self.learn(batch_transitions)
+        if len(self.memory[mem_idx].memory) > 100:
+            batch_transitions = self.memory[mem_idx].sample(100)
             self.learn(batch_transitions)
         
         self.last_action = action

@@ -1,3 +1,5 @@
+#Nicht so, sondern als object? Ne denke doch nicht
+
 # Must be multiples of 10!
 win_x_size = 1000
 win_y_size = 1000
@@ -26,5 +28,20 @@ power_up_color_6 = 30,150,150
 level_name = 'ima.bmp'
 
 game_base_tact = 5
-game_tact = 0.008
+game_tact = 0.008  # rename
 #game_tact = 0.025
+
+
+gamemode = 'endless'
+
+bike1_player = 'ai'
+bike2_player = 'ai'
+#bike2_player = 'human'
+
+bike1_dqn = r'path/to/dqn'
+bike2_dqn = r'path/to/dqn2'
+bike1_mode = 'learn'
+bike2_mode = 'play'
+
+#TODO
+#manual train?
