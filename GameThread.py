@@ -36,20 +36,20 @@ class GameThread(QThread, GameLoop):
             #gamemode = gameconfig.gamemode
             # Das hier sind die win conditions
             if len(self.bike_1.bike) <= 0:
-                self.bike_1.spawn_bike(70,70)
-                self.bike_2.spawn_bike(150,150)
+                self.bike_1.spawn_bike(50,50)
+                self.bike_2.spawn_bike(50,50)
                 #last_reward = -1.
             if len(self.bike_2.bike) <= 0:
-                self.bike_1.spawn_bike(70,70)
-                self.bike_2.spawn_bike(150,150)
+                self.bike_1.spawn_bike(50,50)
+                self.bike_2.spawn_bike(50,50)
                 #last_reward = 1.
             if len(self.bike_1.bike) >= 30:
-                self.bike_1.spawn_bike(70,70)
-                self.bike_2.spawn_bike(70,70)
+                self.bike_1.spawn_bike(50,50)
+                self.bike_2.spawn_bike(50,50)
                 #last_reward = 1.
             if len(self.bike_2.bike) >= 30:
-                self.bike_1.spawn_bike(70,70)
-                self.bike_2.spawn_bike(70,70)
+                self.bike_1.spawn_bike(50,50)
+                self.bike_2.spawn_bike(50,50)
                 #last_reward = -1.
 
 
@@ -67,6 +67,12 @@ class GameThread(QThread, GameLoop):
         while True:
             #  BLACK RED LOST WON
             time.sleep(0.1)
+    
+
+    def save_dqn(self):
+        if gameconfig.bike1_player == 'ai':
+            self.ais['bike_1'].save()
+
     '''
     def get_som_state(self):
         blocked = np.array(self.blocked_blocks).flatten()

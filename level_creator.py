@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw
 import numpy as np
-x = 100
-y = 100
+x = 50
+y = 50
 n = x*10+50
 m = y*10+50
 
@@ -22,6 +22,5 @@ for xx in range(x):
             draw.rectangle(((xx*10+25+1, yy*10+25+1), (xx*10+34-1, yy*10+34-1)), fill="white")
 
 img.save("ima.bmp", "bmp")
-
 
 

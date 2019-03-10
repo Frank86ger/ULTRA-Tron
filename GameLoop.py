@@ -21,10 +21,10 @@ class GameLoop(object):
         self.bike_1 = TronBike()
         self.bike_2 = TronBike()
 
-        self.bike_1.spawn_bike(70,70)
+        self.bike_1.spawn_bike(50,50)
 
         #self.bike_2.inital_length = 10
-        self.bike_2.spawn_bike(120,120)
+        self.bike_2.spawn_bike(50,50)
 
 
         self.board_blocks = BoardBlocks()

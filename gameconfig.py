@@ -1,8 +1,10 @@
 #Nicht so, sondern als object? Ne denke doch nicht
 
 # Must be multiples of 10!
-win_x_size = 1000
-win_y_size = 1000
+#win_x_size = 1000
+#win_y_size = 1000
+win_x_size = 500
+win_y_size = 500
 
 # Power up spawn specs - all in seconds
 power_up_stay_duration = 8.

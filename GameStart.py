@@ -5,7 +5,6 @@ import sys
 import random
 from TronBike import TronBike
 from GameThread import GameThread
-#from GameThread_restructured import GameThread
 import time
 import gameconfig
 from BoardBlocks import BoardBlocks
@@ -67,6 +66,7 @@ class MainWindow(QWidget):
 
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_F5:
+            self.gameThread.save_dqn()
             self.close()
         # Player 1
         if gameconfig.bike1_player == 'human':

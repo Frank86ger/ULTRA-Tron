@@ -1,8 +1,6 @@
 from dqn import Dqn
 
 
-brain = Dqn(5,4,0.8)
-
 class AI(object):
     def __init__(self, state_size, discount, path):
         action_size = 4
@@ -14,4 +12,5 @@ class AI(object):
         the_direc_idx = int(action.numpy())
         return self.directions[the_direc_idx]
 
-        #update
+    def save(self):
+        self.brain.save()
