@@ -1,31 +1,29 @@
-import numpy as np
-from PyQt5.QtCore import QObject, pyqtSignal, QThread, pyqtSlot
-import time
-from PyQt5 import QtCore, QtGui, QtWidgets
-import sys
-import os
+# import numpy as np
+# from PyQt5.QtCore import QObject, pyqtSignal, QThread, pyqtSlot
+# import time
+# from PyQt5 import QtCore, QtGui, QtWidgets
+# import sys
+# import os
 from TronBike import TronBike
 from PowerUp import PowerUp
 import gameconfig
 from BoardBlocks import BoardBlocks
 
-if gameconfig.bike1_player== 'ai' or gameconfig.bike2_player== 'ai':
+if gameconfig.bike1_player == 'ai' or gameconfig.bike2_player == 'ai':
     from dqn_api import AI
 
-#from dqn import Dqn
 
 class GameLoop(object):
     def __init__(self):
 
-        #  Set up bikes, board and power ups.
+        # Set up bikes, board and power ups.
         self.bike_1 = TronBike()
         self.bike_2 = TronBike()
 
-        self.bike_1.spawn_bike(50,50)
+        self.bike_1.spawn_bike(50, 50)
 
-        #self.bike_2.inital_length = 10
-        self.bike_2.spawn_bike(50,50)
-
+        # self.bike_2.inital_length = 10
+        self.bike_2.spawn_bike(50, 50)
 
         self.board_blocks = BoardBlocks()
 
@@ -33,10 +31,8 @@ class GameLoop(object):
         self.blocked_blocks = self.board_blocks.blocked_blocks
 
         self.powerUp = PowerUp(self.bike_1, self.bike_2)
-        
-        #NEW
-        #self.last_reward = 0
-        self.directions = {0:'up', 1:'down', 2:'left', 3:'right'} #kann auch egal sein.
+
+        self.directions = {0: 'up', 1: 'down', 2: 'left', 3: 'right'}
 
         # Initialize DQNs
         discount = 0.8
@@ -46,43 +42,40 @@ class GameLoop(object):
             self.ais['bike_1'] = AI(state_size, discount, gameconfig.bike1_dqn)
         if gameconfig.bike2_player == 'ai':
             if gameconfig.bike1_dqn == gameconfig.bike2_dqn and gameconfig.bike1_player == 'ai':
-                self.ais['bike_2'] = self.ais['bike_1'] # Needs second replay memory!
+                self.ais['bike_2'] = self.ais['bike_1']
             else:
                 self.ais['bike_2'] = AI(state_size, discount, gameconfig.bike2_dqn)
-
 
     def game_step(self, tact_counter):
 
         #  Spawn Power Up.
-        if (tact_counter+1)%self.powerUp.next_spawn_ticks == 0:
+        if (tact_counter+1) % self.powerUp.next_spawn_ticks == 0:
             self.powerUp.spawn_powerup(tact_counter)
 
         #  Step bike 1
-        if tact_counter%self.bike_1.bike_tact == 0:
+        if tact_counter % self.bike_1.bike_tact == 0:
             # dqn learn and update
-            last_signal = self.get_som_state(self.bike_1, self.bike_2) # die noch bike spezifisch machen.
+            last_signal = self.get_som_state(self.bike_1, self.bike_2)  # die noch bike spezifisch machen.
             if gameconfig.bike1_player == 'ai':
-                chosen_direc = self.ais['bike_1'].update(self.bike_1.last_reward, last_signal, 0) # mem_idx ist zue ueberarbeiten
+                # mem_idx ist zue ueberarbeiten
+                chosen_direc = self.ais['bike_1'].update(self.bike_1.last_reward, last_signal, 0)
                 self.bike_1.set_direction(chosen_direc)
             self.bike_1.do_next_step(tact_counter)
             self.bike_1.last_reward = self.calc_rewards(self.bike_1.bike, self.bike_2.bike)
 
-
         #  Step bike 2
-        if tact_counter%self.bike_2.bike_tact == 0:
+        if tact_counter % self.bike_2.bike_tact == 0:
             # dqn learn and update
-            last_signal = self.get_som_state(self.bike_2, self.bike_1) # die noch bike spezifisch machen.
+            last_signal = self.get_som_state(self.bike_2, self.bike_1)  # die noch bike spezifisch machen.
             if gameconfig.bike2_player == 'ai':
                 chosen_direc = self.ais['bike_2'].update(self.bike_2.last_reward, last_signal, 1)
                 self.bike_2.set_direction(chosen_direc)
             self.bike_2.do_next_step(tact_counter)
             self.bike_2.last_reward = self.calc_rewards(self.bike_2.bike, self.bike_1.bike)
 
-
-        
-        #TODO: nachvollziehen warum ich hier kleinen tact hatte
+        # TODO: nachvollziehen warum ich hier kleinen tact hatte
         smaller_tact = min(self.bike_1.bike_tact, self.bike_2.bike_tact)
-        if tact_counter%smaller_tact == 0:
+        if tact_counter % smaller_tact == 0:
 
             #  Collision detection    
             #  Collision of powerUp with bikes

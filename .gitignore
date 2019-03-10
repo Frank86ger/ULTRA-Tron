@@ -2,3 +2,4 @@ ima*
 *.pyc
 __pycache__/
 *.pth
+.idea/

@@ -47,7 +47,7 @@ class MainWindow(QWidget):
     # Slot for bike 1 list
     def get_bike1_list(self, bike1_list):
         self.bike1_list = bike1_list
-        self.update() #  Update graphics output
+        self.update()  # Update graphics output
     
     # Slot for bike 2 list
     def get_bike2_list(self, bike2_list):

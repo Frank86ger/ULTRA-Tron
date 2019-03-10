@@ -11,6 +11,7 @@ from collections import namedtuple
 
 Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward'))
 
+
 # Network for Q learning
 class Network(nn.Module):
     
@@ -51,8 +52,6 @@ class ReplayMemory(object):
         return len(self.memory)
 
 
-
-
 class Dqn():
     
     def __init__(self, input_size, nb_action, gamma):
@@ -68,6 +67,7 @@ class Dqn():
     def select_action(self, state, temperature):
         probs = F.softmax(self.model(state)*temperature, dim=0) # T=100
         #print("Probs :: {}".format(probs))
+        print("Probs :: max: {0:.3f} | min: {1:.03f}".format(probs.max(), probs.min()))
         action = probs.multinomial(1)
         return action.data[0]
 
@@ -103,7 +103,7 @@ class Dqn():
         #print(int(self.last_action))
         self.memory[mem_idx].push(self.last_state, torch.LongTensor([int(self.last_action)]), new_state, torch.Tensor([self.last_reward]))
         #self.memory.push(self.last_state, torch.Tensor([int(self.last_action)]).int(), new_state, torch.Tensor([self.last_reward]))
-        action = self.select_action(new_state, 1.)
+        action = self.select_action(new_state, 100.)
         if len(self.memory[mem_idx].memory) > 100:
             batch_transitions = self.memory[mem_idx].sample(100)
             self.learn(batch_transitions)
@@ -120,7 +120,7 @@ class Dqn():
         #print(torch.LongTensor([int(self.last_action)]))
         return action
 
-    def save(self):
+    def save(self, path):
         torch.save({'state_dict': self.model.state_dict(),
                     'optimizer' : self.optimizer.state_dict(),
                    }, 'last_brain.pth')
