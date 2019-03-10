@@ -1,4 +1,3 @@
-#from PyQt5.QtCore import QObject, pyqtSignal, QThread, pyqtSlot
 from PyQt5.QtCore import pyqtSignal, QThread
 import time
 import gameconfig
