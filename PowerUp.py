@@ -2,13 +2,14 @@ import gameconfig
 import numpy as np
 import random
 
+
 class PowerUp(object):
     
     def __init__(self, bike1, bike2):
 
         #  Dieser name ist RICHTIG scheisse!!!!!
         #  [[position tuples], [types], [stay durations]]
-        self.position = [[],[],[]]
+        self.position = [[], [], []]
 
         self.power_up_types = ['+X', '+velo', '-velo, +X', '+velo, -X']
 
@@ -30,7 +31,7 @@ class PowerUp(object):
         self.next_spawn_ticks = int(self.next_spawn_time / gameconfig.game_tact) + tact_counter
 
     def rtd_for_type(self):
-        rnd = random.randint(0,len(self.power_up_types)-1)
+        rnd = random.randint(0, len(self.power_up_types)-1)
         return self.power_up_types[rnd]
     
     def rtd_for_position(self):
@@ -41,12 +42,11 @@ class PowerUp(object):
         while True:
             rnd_pos = (random.randint(0, board_x_size), random.randint(0, board_y_size))
             
-            if (rnd_pos not in self.bike1.bike) and (rnd_pos not in self.bike2.bike) and True: # .. NICHT IN DER WAND
+            if (rnd_pos not in self.bike1.bike) and (rnd_pos not in self.bike2.bike) and True:  # .. NICHT IN DER WAND
             
                 break
         
         return rnd_pos
-
 
     def bike_collision(self, game_tick):
 
@@ -60,13 +60,14 @@ class PowerUp(object):
                     if self.bike2.bike[0] == posi:
                         self.execute_powerup(self.bike2, self.position[1][idx], game_tick)
                 if len(self.bike1.bike) > 0 and len(self.bike2.bike) > 0:
-                    if (self.bike1.bike[0] == posi) or (self.bike2.bike[0] == posi): #moeglicher fehler wenn einer mit len 1 nen powerup nimmt?
+                    # moeglicher fehler wenn einer mit len 1 nen powerup nimmt?
+                    if (self.bike1.bike[0] == posi) or (self.bike2.bike[0] == posi):
                         del self.position[0][idx]
                         del self.position[1][idx]
                         del self.position[2][idx]
 
-
-    def execute_powerup(self, bike, powerup, game_tick):
+    @staticmethod
+    def execute_powerup(bike, powerup, game_tick):
         if powerup == '+X':
             bike.size_change += 5
         elif powerup == '+velo':
@@ -89,4 +90,3 @@ class PowerUp(object):
                     del self.position[0][idx]
                     del self.position[1][idx]
                     del self.position[2][idx]
-

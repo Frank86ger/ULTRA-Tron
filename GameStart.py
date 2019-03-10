@@ -1,21 +1,19 @@
 from PyQt5.QtWidgets import QWidget, QApplication
-from PyQt5.QtGui import QPainter, QColor, QBrush, QPen
+from PyQt5.QtGui import QPainter, QColor, QPen
 from PyQt5.QtCore import Qt
 import sys
-import random
-from TronBike import TronBike
 from GameThread import GameThread
-import time
 import gameconfig
 from BoardBlocks import BoardBlocks
+
 
 class MainWindow(QWidget):
     
     def __init__(self):
         super().__init__()
         win_x_size, win_y_size, _ = BoardBlocks.load_level2(gameconfig.level_name)
-        self.win_x_size = win_x_size#gameconfig.win_x_size + 50
-        self.win_y_size = win_y_size#gameconfig.win_y_size + 50
+        self.win_x_size = win_x_size  # gameconfig.win_x_size + 50
+        self.win_y_size = win_y_size  # gameconfig.win_y_size + 50
         self.initUI()
 
         #  Start game thread. Needs to be separatly implemented for no-gui interface.
@@ -32,13 +30,14 @@ class MainWindow(QWidget):
         self.bike1_list = []
         self.bike2_list = []
         self.power_up_list = [[]]
-        self.power_up_colors = {'+X':gameconfig.power_up_color_1, '+velo':gameconfig.power_up_color_2, '-velo, +X':gameconfig.power_up_color_3, '+velo, -X':gameconfig.power_up_color_4}
-
+        self.power_up_colors = {'+X': gameconfig.power_up_color_1,
+                                '+velo': gameconfig.power_up_color_2,
+                                '-velo, +X': gameconfig.power_up_color_3,
+                                '+velo, -X': gameconfig.power_up_color_4}
 
         #  Start gameThread.
         self.gameThread.start()
-        
-        
+
     def initUI(self):
         self.setGeometry(300, 300, self.win_x_size, self.win_y_size)
         self.setWindowTitle('ULTRA-Tron')
@@ -52,7 +51,7 @@ class MainWindow(QWidget):
     # Slot for bike 2 list
     def get_bike2_list(self, bike2_list):
         self.bike2_list = bike2_list
-        #self.update() #  Update graphics output
+        # self.update()  #  Update graphics output
 
     # Slot for power up list
     def get_power_up_list(self, powerup_list):
@@ -96,13 +95,13 @@ class MainWindow(QWidget):
         shift_2 = 2
         pen = QPen(Qt.black, border_width, Qt.SolidLine)
         qp.setPen(pen)
-        qp.setBrush(QColor(0,0,0))
-        qp.drawLine(25-shift_1,25-shift_1,25-shift_1,self.win_y_size-25+shift_2)
-        qp.drawLine(25-shift_1,25-shift_1,self.win_x_size-25+shift_2,25-shift_1)
-        qp.drawLine(25-shift_1,self.win_y_size-25+shift_2,self.win_x_size-25+shift_2,self.win_y_size-25+shift_2)
-        qp.drawLine(self.win_x_size-25+shift_2,25-shift_1,self.win_x_size-25+shift_2,self.win_y_size-25+shift_2)
+        qp.setBrush(QColor(0, 0, 0))
+        qp.drawLine(25-shift_1, 25-shift_1, 25-shift_1, self.win_y_size-25+shift_2)
+        qp.drawLine(25-shift_1, 25-shift_1, self.win_x_size-25+shift_2, 25-shift_1)
+        qp.drawLine(25-shift_1, self.win_y_size-25+shift_2, self.win_x_size-25+shift_2, self.win_y_size-25+shift_2)
+        qp.drawLine(self.win_x_size-25+shift_2, 25-shift_1, self.win_x_size-25+shift_2, self.win_y_size-25+shift_2)
 
-        qp.setPen(QColor(255,255,255))
+        qp.setPen(QColor(255, 255, 255))
 
         #  Draw bike 1
         qp.setBrush(QColor(*gameconfig.bike_1_color))

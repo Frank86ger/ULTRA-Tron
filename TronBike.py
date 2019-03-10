@@ -8,7 +8,7 @@ class TronBike(object):
 
         self.inital_length = 20
         self.bike = []
-        self.directions = {'up':(0,-1), 'down':(0,1), 'left':(-1,0), 'right':(1,0)}
+        self.directions = {'up': (0, -1), 'down': (0, 1), 'left': (-1, 0), 'right': (1, 0)}
         self.direction = (self.directions['up'])
         
         self.size_change = 0
@@ -16,10 +16,10 @@ class TronBike(object):
         self.reset_bike_tact_tick = -1
         
         self.set_direction('up')
-        ##self.spawn_bike(70,70)
+        # self.spawn_bike(70,70)
         
-        #random.randint(5,60)
-        #self.spawn_bike(random.randint(5,45),random.randint(5,45))
+        # random.randint(5,60)
+        # self.spawn_bike(random.randint(5,45),random.randint(5,45))
 
         self.dqn_path = None
         self.last_reward = 0.0
@@ -34,15 +34,14 @@ class TronBike(object):
             new_y = self.bike[-1][1] - self.direction[1]
             self.bike.append((new_x, new_y))
     
-    #needs rework
+    # needs rework
     def set_direction(self, direction):
         #  Version A
-        #self.direction = self.directions[direction]
+        # self.direction = self.directions[direction]
 
         #  Version B (das hier ist nicht ganz sauber .. vllt einfach version A als Standard)
-        if (self.directions[direction][0] + self.direction[0], self.directions[direction][1] + self.direction[1]) != (0,0):
+        if (self.directions[direction][0] + self.direction[0], self.directions[direction][1] + self.direction[1]) != (0, 0):
             self.direction = self.directions[direction]
-
 
     def move_bike(self):
         new_x = self.bike[0][0] + self.direction[0]
@@ -71,7 +70,7 @@ class TronBike(object):
     
     # der name koennte besser sein.
     # ueberlagerung von 2 events muessen sich aufsummieren
-    def do_next_step(self, gametime):
+    def do_next_step(self):
         if self.size_change == 0:
             self.move_bike()
             self.move()
@@ -86,18 +85,17 @@ class TronBike(object):
 
     @classmethod
     def bike_bike_collision(cls, bike1, bike2):
-        #bei dieser und den naechsten methoden wird auf das erste element von bike zugegriffen
-        #die lsite kann aber auch 0 lang sein.
+        # bei dieser und den naechsten methoden wird auf das erste element von bike zugegriffen
+        # die lsite kann aber auch 0 lang sein.
         if len(bike1.bike) > 0:
             if bike1.bike[0] in bike2.bike:
                 bike1.size_change -= 5
         if len(bike2.bike) > 0:
             if bike2.bike[0] in bike1.bike:
-                bike2.size_change -= 5 
-                #pass
+                bike2.size_change -= 5
     
     def bike_self_collision(self):
-        if len(self.bike) > 0: #keine self collision wenn bike 0 lang ist
+        if len(self.bike) > 0:  # keine self collision wenn bike 0 lang ist
             if self.bike[0] in self.bike[1:]:
                 self.size_change -= 5
     

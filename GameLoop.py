@@ -60,7 +60,7 @@ class GameLoop(object):
                 # mem_idx ist zue ueberarbeiten
                 chosen_direc = self.ais['bike_1'].update(self.bike_1.last_reward, last_signal, 0)
                 self.bike_1.set_direction(chosen_direc)
-            self.bike_1.do_next_step(tact_counter)
+            self.bike_1.do_next_step()
             self.bike_1.last_reward = self.calc_rewards(self.bike_1.bike, self.bike_2.bike)
 
         #  Step bike 2
@@ -70,7 +70,7 @@ class GameLoop(object):
             if gameconfig.bike2_player == 'ai':
                 chosen_direc = self.ais['bike_2'].update(self.bike_2.last_reward, last_signal, 1)
                 self.bike_2.set_direction(chosen_direc)
-            self.bike_2.do_next_step(tact_counter)
+            self.bike_2.do_next_step()
             self.bike_2.last_reward = self.calc_rewards(self.bike_2.bike, self.bike_1.bike)
 
         # TODO: nachvollziehen warum ich hier kleinen tact hatte
@@ -111,28 +111,30 @@ class GameLoop(object):
                 reward += -0.1
         else:
             reward = 0.1
-        if len(this_bike) <= 0 or len(other_bike) > 100: #100 anpassen ! gameconfig !!!
+        if len(this_bike) <= 0 or len(other_bike) > 100:  # 100 anpassen ! gameconfig !!!
             reward += -100.0
-        if len(this_bike) >= 100 or len(other_bike) <=0:
+        if len(this_bike) >= 100 or len(other_bike) <= 0:
             reward += 100.0
         # Game lose rewards / uebergang zu neuem game genau ueberdenken
         return reward
 
     def get_som_state(self, this_bike, other_bike):
         the_state = []
-        retard_dict = {(0,-1):0, (0,1):1, (-1,0):2, (1,0):3}
+        retard_dict = {(0, -1): 0, (0, 1): 1, (-1, 0): 2, (1, 0): 3}
         if len(this_bike.bike) > 0:
             this_bike_head = this_bike.bike[0]
-            same_x = [x[1] for x in (this_bike.bike[1:]+self.blocked_blocks+other_bike.bike) if x[0]==this_bike_head[0]]
-            same_y = [x[0] for x in (this_bike.bike[1:]+self.blocked_blocks+other_bike.bike) if x[1]==this_bike_head[1]]
-        
+            same_x = [x[1] for x in (this_bike.bike[1:]+self.blocked_blocks+other_bike.bike)
+                      if x[0] == this_bike_head[0]]
+            same_y = [x[0] for x in (this_bike.bike[1:]+self.blocked_blocks+other_bike.bike)
+                      if x[1] == this_bike_head[1]]
+
             if len(same_x) > 0:
-                tmp_lst = [y-this_bike_head[1] for y in same_x if y>=this_bike_head[1]]
+                tmp_lst = [y-this_bike_head[1] for y in same_x if y >= this_bike_head[1]]
                 if len(tmp_lst) > 0:
                     the_state.append(abs(min(tmp_lst)))
                 else:
                     the_state.append(100)
-                tmp_lst = [y-this_bike_head[1] for y in same_x if y<=this_bike_head[1]]
+                tmp_lst = [y-this_bike_head[1] for y in same_x if y <= this_bike_head[1]]
                 if len(tmp_lst) > 0:
                     the_state.append(abs(max(tmp_lst)))
                 else:
@@ -142,12 +144,12 @@ class GameLoop(object):
                 the_state.append(100)
             
             if len(same_y) > 0:
-                tmp_lst = [x-this_bike_head[0] for x in same_y if x>=this_bike_head[0]]
+                tmp_lst = [x-this_bike_head[0] for x in same_y if x >= this_bike_head[0]]
                 if len(tmp_lst) > 0:
                     the_state.append(abs(min(tmp_lst)))
                 else:
                     the_state.append(100)
-                tmp_lst = [x-this_bike_head[0] for x in same_y if x<=this_bike_head[0]]
+                tmp_lst = [x-this_bike_head[0] for x in same_y if x <= this_bike_head[0]]
                 if len(tmp_lst) > 0:
                     the_state.append(abs(max(tmp_lst)))
                 else:
@@ -158,65 +160,5 @@ class GameLoop(object):
                 
             the_state.append(retard_dict[this_bike.direction])
         else:
-            the_state = [0,0,0,0,0]
+            the_state = [0, 0, 0, 0, 0]
         return the_state
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    #################
-    """
-    def get_som_state(self):
-        the_state = []
-        retard_dict = {(0,-1):0, (0,1):1, (-1,0):2, (1,0):3}
-        if len(self.bike_1.bike) > 0:
-            bike1_head = self.bike_1.bike[0]
-            same_x = [x[1] for x in (self.bike_1.bike[1:]+self.blocked_blocks+self.bike_2.bike) if x[0]==bike1_head[0]]
-            same_y = [x[0] for x in (self.bike_1.bike[1:]+self.blocked_blocks+self.bike_2.bike) if x[1]==bike1_head[1]]
-        
-            if len(same_x) > 0:
-                tmp_lst = [y-bike1_head[1] for y in same_x if y>=bike1_head[1]]
-                if len(tmp_lst) > 0:
-                    the_state.append(abs(min(tmp_lst)))
-                else:
-                    the_state.append(100)
-                tmp_lst = [y-bike1_head[1] for y in same_x if y<=bike1_head[1]]
-                if len(tmp_lst) > 0:
-                    the_state.append(abs(max(tmp_lst)))
-                else:
-                    the_state.append(100)
-            else:
-                the_state.append(100)
-                the_state.append(100)
-            
-            if len(same_y) > 0:
-                tmp_lst = [x-bike1_head[0] for x in same_y if x>=bike1_head[0]]
-                if len(tmp_lst) > 0:
-                    the_state.append(abs(min(tmp_lst)))
-                else:
-                    the_state.append(100)
-                tmp_lst = [x-bike1_head[0] for x in same_y if x<=bike1_head[0]]
-                if len(tmp_lst) > 0:
-                    the_state.append(abs(max(tmp_lst)))
-                else:
-                    the_state.append(100)
-            else:
-                the_state.append(100)
-                the_state.append(100)
-                
-            the_state.append(retard_dict[self.bike_1.direction])
-        else:
-            the_state = [0,0,0,0,0]
-        return the_state
-        """

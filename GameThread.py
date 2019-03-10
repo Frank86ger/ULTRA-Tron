@@ -1,17 +1,9 @@
-import numpy as np
-from PyQt5.QtCore import QObject, pyqtSignal, QThread, pyqtSlot
+#from PyQt5.QtCore import QObject, pyqtSignal, QThread, pyqtSlot
+from PyQt5.QtCore import pyqtSignal, QThread
 import time
-from PyQt5 import QtCore, QtGui, QtWidgets
-import sys
-import os
-from TronBike import TronBike
-from PowerUp import PowerUp
 import gameconfig
-from BoardBlocks import BoardBlocks
 from GameLoop import GameLoop
-from dqn import Dqn
 
-import random # kann wieder weg?
 
 class GameThread(QThread, GameLoop):
 
@@ -22,8 +14,7 @@ class GameThread(QThread, GameLoop):
     def __init__(self, parent=None):
         QThread.__init__(self, parent)
         GameLoop.__init__(self)
-        #super(GameThread, self).__init__()
-
+        # super(GameThread, self).__init__()
 
     def run(self):
 
@@ -32,42 +23,35 @@ class GameThread(QThread, GameLoop):
 
             smaller_tact = self.game_step(tact_counter)
 
-
-            #gamemode = gameconfig.gamemode
+            # gamemode = gameconfig.gamemode
             # Das hier sind die win conditions
             if len(self.bike_1.bike) <= 0:
-                self.bike_1.spawn_bike(50,50)
-                self.bike_2.spawn_bike(50,50)
-                #last_reward = -1.
+                self.bike_1.spawn_bike(50, 50)
+                self.bike_2.spawn_bike(50, 50)
             if len(self.bike_2.bike) <= 0:
-                self.bike_1.spawn_bike(50,50)
-                self.bike_2.spawn_bike(50,50)
-                #last_reward = 1.
+                self.bike_1.spawn_bike(50, 50)
+                self.bike_2.spawn_bike(50, 50)
             if len(self.bike_1.bike) >= 30:
-                self.bike_1.spawn_bike(50,50)
-                self.bike_2.spawn_bike(50,50)
-                #last_reward = 1.
+                self.bike_1.spawn_bike(50, 50)
+                self.bike_2.spawn_bike(50, 50)
             if len(self.bike_2.bike) >= 30:
-                self.bike_1.spawn_bike(50,50)
-                self.bike_2.spawn_bike(50,50)
-                #last_reward = -1.
-
+                self.bike_1.spawn_bike(50, 50)
+                self.bike_2.spawn_bike(50, 50)
 
             # Emits
-            #  Emit power up list
+            # Emit power up list
             self.power_up_list.emit(self.powerUp.position)
 
             self.bike2_list.emit(self.bike_2.bike)
-            self.bike1_list.emit(self.bike_1.bike) # auch an den update gebunden
+            self.bike1_list.emit(self.bike_1.bike)  # auch an den update gebunden
             
-            #time.sleep(gameconfig.game_tact)
+            # time.sleep(gameconfig.game_tact)
             time.sleep(gameconfig.game_base_tact / smaller_tact * gameconfig.game_tact)
             tact_counter += 1
 
         while True:
             #  BLACK RED LOST WON
             time.sleep(0.1)
-    
 
     def save_dqn(self):
         if gameconfig.bike1_player == 'ai':
