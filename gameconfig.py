@@ -36,6 +36,7 @@ game_tact = 0.008  # rename
 
 gamemode = 'endless'
 
+# 'ai' or 'human'
 bike1_player = 'ai'
 bike2_player = 'ai'
 #bike2_player = 'human'

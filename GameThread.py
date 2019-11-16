@@ -2,13 +2,15 @@ from PyQt5.QtCore import pyqtSignal, QThread
 import time
 import gameconfig
 from GameLoop import GameLoop
-
+import numpy as np
 
 class GameThread(QThread, GameLoop):
 
     bike1_list = pyqtSignal(list)
     bike2_list = pyqtSignal(list)
     power_up_list = pyqtSignal(list)
+    reward_list = pyqtSignal(list)
+    probs_list = pyqtSignal(list)
 
     def __init__(self, parent=None):
         QThread.__init__(self, parent)
@@ -27,9 +29,11 @@ class GameThread(QThread, GameLoop):
             if len(self.bike_1.bike) <= 0:
                 self.bike_1.spawn_bike(50, 50)
                 self.bike_2.spawn_bike(50, 50)
+                self.poisonous = True
             if len(self.bike_2.bike) <= 0:
                 self.bike_1.spawn_bike(50, 50)
                 self.bike_2.spawn_bike(50, 50)
+                self.poisonous = True
             if len(self.bike_1.bike) >= 30:
                 self.bike_1.spawn_bike(50, 50)
                 self.bike_2.spawn_bike(50, 50)
@@ -43,6 +47,9 @@ class GameThread(QThread, GameLoop):
 
             self.bike2_list.emit(self.bike_2.bike)
             self.bike1_list.emit(self.bike_1.bike)  # auch an den update gebunden
+
+            self.reward_list.emit(list(self.ais['bike_2'].loss))
+            self.probs_list.emit(list(self.ais['bike_2'].probs))
             
             # time.sleep(gameconfig.game_tact)
             time.sleep(gameconfig.game_base_tact / smaller_tact * gameconfig.game_tact)
@@ -54,7 +61,7 @@ class GameThread(QThread, GameLoop):
 
     def save_dqn(self):
         if gameconfig.bike1_player == 'ai':
-            self.ais['bike_1'].save()
+            self.ais['bike_1'].save('path')
 
     '''
     def get_som_state(self):

@@ -57,17 +57,22 @@ class Dqn():
     def __init__(self, input_size, nb_action, gamma):
         self.gamma = gamma
         #self.model = Network(input_size, 60, 30, nb_action)
-        self.model = Network(input_size, 40, 40, nb_action)
+        #self.model = Network(input_size, 40, 40, nb_action)
+        # self.model = Network(input_size, 10, 10, nb_action)
+        self.model = Network(input_size, 160, 160, nb_action)
         self.memory = [ReplayMemory(10000), ReplayMemory(10000)]
         self.optimizer = optim.Adam(self.model.parameters(), lr = 0.001)
         self.last_state = torch.Tensor(input_size)#.unsqueeze(0)
         self.last_action = 0
         self.last_reward = 0
+        self.loss = 0
+        self.probs = np.array([0., 0., 0., 0.])
 
     def select_action(self, state, temperature):
         probs = F.softmax(self.model(state)*temperature, dim=0) # T=100
         #print("Probs :: {}".format(probs))
-        print("Probs :: max: {0:.3f} | min: {1:.03f}".format(probs.max(), probs.min()))
+        #print("Probs :: max: {0:.3f} | min: {1:.03f}".format(probs.max(), probs.min()))
+        self.probs = probs.detach().numpy()#.sort()
         action = probs.multinomial(1)
         return action.data[0]
 
@@ -89,6 +94,7 @@ class Dqn():
 
         target = self.gamma * max_q_values + batch.reward
         td_loss = F.smooth_l1_loss(chosen_state_action_values, target)
+        self.loss = td_loss
         #print("Loss :: {}".format(td_loss))
         self.optimizer.zero_grad()
         td_loss.backward()
@@ -96,14 +102,15 @@ class Dqn():
         #print(max_q_values)
         #print((self.model(torch.tensor([0.5]*6))))
 
-    def update(self, reward, new_signal, mem_idx=0):
+    def update(self, reward, new_signal, push=True, mem_idx=0):
         #new_signal kann auch new_state heissen oder?
         new_state = torch.Tensor(new_signal).float()
         #('state', 'action', 'next_state', 'reward')
         #print(int(self.last_action))
-        self.memory[mem_idx].push(self.last_state, torch.LongTensor([int(self.last_action)]), new_state, torch.Tensor([self.last_reward]))
+        if push:
+            self.memory[mem_idx].push(self.last_state, torch.LongTensor([int(self.last_action)]), new_state, torch.Tensor([self.last_reward]))
         #self.memory.push(self.last_state, torch.Tensor([int(self.last_action)]).int(), new_state, torch.Tensor([self.last_reward]))
-        action = self.select_action(new_state, 100.)
+        action = self.select_action(new_state, 10000.)
         if len(self.memory[mem_idx].memory) > 100:
             batch_transitions = self.memory[mem_idx].sample(100)
             self.learn(batch_transitions)

@@ -1,13 +1,15 @@
-from PyQt5.QtWidgets import QWidget, QApplication
+from PyQt5.QtWidgets import QWidget, QApplication, QDockWidget, QMainWindow
 from PyQt5.QtGui import QPainter, QColor, QPen
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QRect
 import sys
 from GameThread import GameThread
 import gameconfig
 from BoardBlocks import BoardBlocks
+import pyqtgraph as pg
+import numpy as np
 
 
-class MainWindow(QWidget):
+class MainWindow(QMainWindow):
     
     def __init__(self):
         super().__init__()
@@ -16,12 +18,17 @@ class MainWindow(QWidget):
         self.win_y_size = win_y_size  # gameconfig.win_y_size + 50
         self.initUI()
 
+        self.plotwin1 = PlotWindow(self, self.win_x_size, 25, 500-25, int(1.*self.win_y_size/2)-50)
+        self.plotwin2 = PlotWindow(self, self.win_x_size, int(1. * self.win_y_size / 2)+25, 500 - 25, int(1.*self.win_y_size/2)-50)
+
         #  Start game thread. Needs to be separatly implemented for no-gui interface.
         self.gameThread = GameThread()
 
         #  Connect sinals of tron-bike positions in gameThread to slot in MainWindow.
         self.gameThread.bike1_list.connect(self.get_bike1_list)
         self.gameThread.bike2_list.connect(self.get_bike2_list)
+        self.gameThread.reward_list.connect(self.get_reward_list)
+        self.gameThread.probs_list.connect(self.get_probs_list)
 
         #  Connect signal of powerup information in gameTHread to slot in MainWindow.
         self.gameThread.power_up_list.connect(self.get_power_up_list)
@@ -29,6 +36,8 @@ class MainWindow(QWidget):
         #  Init list of tron-bike positions and list of power ups.
         self.bike1_list = []
         self.bike2_list = []
+        self.reward_list = []
+        self.probs_list = []
         self.power_up_list = [[]]
         self.power_up_colors = {'+X': gameconfig.power_up_color_1,
                                 '+velo': gameconfig.power_up_color_2,
@@ -39,7 +48,7 @@ class MainWindow(QWidget):
         self.gameThread.start()
 
     def initUI(self):
-        self.setGeometry(300, 300, self.win_x_size, self.win_y_size)
+        self.setGeometry(300, 300, self.win_x_size+500, self.win_y_size)
         self.setWindowTitle('ULTRA-Tron')
         self.show()
     
@@ -52,6 +61,24 @@ class MainWindow(QWidget):
     def get_bike2_list(self, bike2_list):
         self.bike2_list = bike2_list
         # self.update()  #  Update graphics output
+
+    def get_reward_list(self, reward_list):
+        self.reward_list = reward_list
+        self.plotwin1.clear()
+        self.plotwin1.plot(np.arange(len(reward_list)), reward_list, pen=None, symbol='o')
+
+    def get_probs_list(self, probs_list):
+        self.probs_list = probs_list
+        self.plotwin2.clear()
+        #print(probs_list)
+        probs = np.array(probs_list)
+
+        self.plotwin2.plot(np.arange(len(probs_list)), probs[:, 0], pen=None, symbol='+')
+        #self.plotwin2.plot(np.arange(len(probs_list)), probs[:, 1], pen=None, symbol='s')
+        #self.plotwin2.plot(np.arange(len(probs_list)), probs[:, 2], pen=None, symbol='t')
+
+        self.plotwin2.plot(np.arange(len(probs_list)), probs[:, 3], pen=None, symbol='o')
+
 
     # Slot for power up list
     def get_power_up_list(self, powerup_list):
@@ -133,6 +160,19 @@ class MainWindow(QWidget):
                 block_x = block[0]*10+25
                 block_y = block[1]*10+25
                 qp.drawRect(block_x, block_y, 10, 10)
+
+
+#class PlotWindow(QWidget):
+class PlotWindow(pg.PlotWidget):
+    def __init__(self, parent, x, y, width, height):
+        super(PlotWindow, self).__init__(parent)
+        self.setGeometry(x, y, width, height)
+        self.show()
+        #self.plotter =
+
+
+
+
 
 
 if __name__ == '__main__':

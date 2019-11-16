@@ -37,11 +37,11 @@ class TronBike(object):
     # needs rework
     def set_direction(self, direction):
         #  Version A
-        # self.direction = self.directions[direction]
+        self.direction = self.directions[direction]
 
         #  Version B (das hier ist nicht ganz sauber .. vllt einfach version A als Standard)
-        if (self.directions[direction][0] + self.direction[0], self.directions[direction][1] + self.direction[1]) != (0, 0):
-            self.direction = self.directions[direction]
+        #if (self.directions[direction][0] + self.direction[0], self.directions[direction][1] + self.direction[1]) != (0, 0):
+        #    self.direction = self.directions[direction]
 
     def move_bike(self):
         new_x = self.bike[0][0] + self.direction[0]
@@ -89,15 +89,15 @@ class TronBike(object):
         # die lsite kann aber auch 0 lang sein.
         if len(bike1.bike) > 0:
             if bike1.bike[0] in bike2.bike:
-                bike1.size_change -= 5
+                bike1.size_change -= 1
         if len(bike2.bike) > 0:
             if bike2.bike[0] in bike1.bike:
-                bike2.size_change -= 5
+                bike2.size_change -= 1
     
     def bike_self_collision(self):
         if len(self.bike) > 0:  # keine self collision wenn bike 0 lang ist
             if self.bike[0] in self.bike[1:]:
-                self.size_change -= 5
+                self.size_change -= 1
     
     def bike_wall_collision(self, blocked_blocks):
         if len(self.bike) > 0:

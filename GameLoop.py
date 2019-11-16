@@ -34,9 +34,11 @@ class GameLoop(object):
 
         self.directions = {0: 'up', 1: 'down', 2: 'left', 3: 'right'}
 
+        self.poisonous = False
+
         # Initialize DQNs
         discount = 0.8
-        state_size = 5
+        state_size = 6
         self.ais = {}
         if gameconfig.bike1_player == 'ai':
             self.ais['bike_1'] = AI(state_size, discount, gameconfig.bike1_dqn)
@@ -58,7 +60,8 @@ class GameLoop(object):
             last_signal = self.get_som_state(self.bike_1, self.bike_2)  # die noch bike spezifisch machen.
             if gameconfig.bike1_player == 'ai':
                 # mem_idx ist zue ueberarbeiten
-                chosen_direc = self.ais['bike_1'].update(self.bike_1.last_reward, last_signal, 0)
+                chosen_direc = self.ais['bike_1'].update(self.bike_1.last_reward, last_signal, 0, self.poisonous)
+                self.poisonous = False
                 self.bike_1.set_direction(chosen_direc)
             self.bike_1.do_next_step()
             self.bike_1.last_reward = self.calc_rewards(self.bike_1.bike, self.bike_2.bike)
@@ -68,7 +71,8 @@ class GameLoop(object):
             # dqn learn and update
             last_signal = self.get_som_state(self.bike_2, self.bike_1)  # die noch bike spezifisch machen.
             if gameconfig.bike2_player == 'ai':
-                chosen_direc = self.ais['bike_2'].update(self.bike_2.last_reward, last_signal, 1)
+                chosen_direc = self.ais['bike_2'].update(self.bike_2.last_reward, last_signal, 1, self.poisonous)
+                self.poisonous = False
                 self.bike_2.set_direction(chosen_direc)
             self.bike_2.do_next_step()
             self.bike_2.last_reward = self.calc_rewards(self.bike_2.bike, self.bike_1.bike)
@@ -106,15 +110,15 @@ class GameLoop(object):
         reward = 0
         if this_bike:  # len>0
             if this_bike[0] in this_bike[1:] or this_bike[0] in self.blocked_blocks:
-                reward = -0.1
+                reward += -0.1
             if other_bike and this_bike[0] in other_bike:
                 reward += -0.1
         else:
             reward = 0.1
         if len(this_bike) <= 0 or len(other_bike) > 100:  # 100 anpassen ! gameconfig !!!
-            reward += -100.0
+            reward += -1.0
         if len(this_bike) >= 100 or len(other_bike) <= 0:
-            reward += 100.0
+            reward += 1.0
         # Game lose rewards / uebergang zu neuem game genau ueberdenken
         return reward
 
@@ -159,6 +163,7 @@ class GameLoop(object):
                 the_state.append(100)
                 
             the_state.append(retard_dict[this_bike.direction])
+            the_state.append(len(this_bike.bike))
         else:
-            the_state = [0, 0, 0, 0, 0]
+            the_state = [0, 0, 0, 0, 0, 0]
         return the_state
